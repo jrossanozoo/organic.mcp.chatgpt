@@ -1,0 +1,12 @@
+Dejar una sola versión, la última, usando el nombre original y el puerto externo 3101:
+docker rm -f mcp.organic
+docker run -d --name mcp.organic -e MCP_TRANSPORT=http -e MCP_SERVER_HOST=0.0.0.0 -e MCP_SERVER_PORT=3000 -p 3101:3000 mcp-organic:v1
+
+Health:
+http://localhost:3101/health
+
+Cliente MCP moderno:
+http://localhost:3101/mcp
+
+Cliente MCP legado tipo SSE como el original:
+http://localhost:3101/sse

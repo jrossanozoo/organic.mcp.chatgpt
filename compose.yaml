@@ -1,0 +1,44 @@
+name: ${COMPOSE_PROJECT_NAME:-mcp-organic-parallel}
+
+services:
+  organic-mcp-base:
+    image: ${MCP_BASE_IMAGE:-mcp-organic:base}
+    container_name: ${MCP_BASE_CONTAINER_NAME:-Organic.mcpbase}
+    restart: unless-stopped
+    environment:
+      MCP_TRANSPORT: http
+      MCP_SERVER_HOST: 0.0.0.0
+      MCP_SERVER_PORT: ${MCP_BASE_CONTAINER_PORT:-3000}
+      MCP_HTTP_PATH: ${MCP_HTTP_PATH:-/mcp}
+      KNOWLEDGE_BASE_PATH: ./src/knowledge
+      DEFAULT_BUSINESS_LINE: ${DEFAULT_BUSINESS_LINE:-organic}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "${MCP_BASE_HOST_PORT:-3000}:${MCP_BASE_CONTAINER_PORT:-3000}"
+    healthcheck:
+      test: ["CMD", "node", "-e", "const http=require('node:http');const port=Number(process.env.MCP_SERVER_PORT||3000);const request=http.get({host:'127.0.0.1',port,path:'/health'},(response)=>{process.exit(response.statusCode===200?0:1);});request.on('error',()=>process.exit(1));"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  organic-mcp-v1:
+    image: ${MCP_V1_IMAGE:-mcp-organic:v1}
+    container_name: ${MCP_V1_CONTAINER_NAME:-Organic.mcpv1}
+    restart: unless-stopped
+    environment:
+      MCP_TRANSPORT: http
+      MCP_SERVER_HOST: 0.0.0.0
+      MCP_SERVER_PORT: ${MCP_V1_CONTAINER_PORT:-3000}
+      MCP_HTTP_PATH: ${MCP_HTTP_PATH:-/mcp}
+      KNOWLEDGE_BASE_PATH: ./src/knowledge
+      DEFAULT_BUSINESS_LINE: ${DEFAULT_BUSINESS_LINE:-organic}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "${MCP_V1_HOST_PORT:-3001}:${MCP_V1_CONTAINER_PORT:-3000}"
+    healthcheck:
+      test: ["CMD", "node", "-e", "const http=require('node:http');const port=Number(process.env.MCP_SERVER_PORT||3000);const request=http.get({host:'127.0.0.1',port,path:'/health'},(response)=>{process.exit(response.statusCode===200?0:1);});request.on('error',()=>process.exit(1));"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
